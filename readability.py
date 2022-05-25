@@ -53,7 +53,7 @@ def init_sdp(jar_path, models_jar_path):
 def all_features(text, scp, sdp):
       # text = open("3rdMountedDivision.txt").read()
     textB = TextBlob(text)
-    nlp=stanza.Pipeline('en',processors='tokenize,mwt,POS,sentiment')
+    nlp=stanza.Pipeline('en',processors='tokenize,mwt,POS')
     doc=nlp(text)
     # Pre-Processing Steps for lexical features
     words = word_tokenize(text)
