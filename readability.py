@@ -860,4 +860,9 @@ def all_features(text, scp, sdp):
 
 # x=all_features(text)
 # print(x)
+def classify(x,saved_model):
+    loaded_model = pickle.load(open(saved_model,'rb'))
+    result = loaded_model.predict(x)
+    print(result)
 
+    return result
