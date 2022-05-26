@@ -7,6 +7,10 @@ Original file is located at
     https://colab.research.google.com/drive/1VwfdGLKLHaI8gsaCoFuMw1BUkTVK2HDN
 """
 
+# ! pip install pattern
+
+# !pip install stanza
+
 from __future__ import division
 import nltk
 from nltk.corpus import stopwords
@@ -22,24 +26,34 @@ import string
 import numpy as np
 from nltk.corpus import stopwords
 cmuDictionary = None
+from textblob import TextBlob
+
 from pattern.en import parsetree, Chunk
 from nltk.tree import Tree
-import stanza
-stanza.download('en')
-from nltk.parse.stanford import StanfordDependencyParser
-from nltk.parse.stanford import StanfordParser, StanfordDependencyParser
 
+import stanza
+
+stanza.download('en')
+
+from nltk.parse.stanford import StanfordDependencyParser
+
+# !wget https://nlp.stanford.edu/software/stanford-corenlp-4.4.0.zip
+# !wget https://nlp.stanford.edu/software/stanford-corenlp-4.4.0-models-english.jar
+# !unzip /content/stanford-corenlp-4.4.0.zip
+
+from nltk.parse.stanford import StanfordParser, StanfordDependencyParser
 
 def init_scp(jar_path, models_jar_path):
   return StanfordParser(path_to_jar = jar_path, path_to_models_jar = models_jar_path)
 
-
 def init_sdp(jar_path, models_jar_path):
   return StanfordDependencyParser(path_to_jar = jar_path, path_to_models_jar = models_jar_path)
 
-    
+
 def all_features(text, scp, sdp):
-    nlp=stanza.Pipeline('en',processors='tokenize,mwt,POS')
+      # text = open("3rdMountedDivision.txt").read()
+    textB = TextBlob(text)
+    nlp=stanza.Pipeline('en',processors='tokenize,mwt,POS,sentiment')
     doc=nlp(text)
     # Pre-Processing Steps for lexical features
     words = word_tokenize(text)
@@ -107,6 +121,16 @@ def all_features(text, scp, sdp):
         numauxverbs=numModals
         numVerbsOnly=len(numVerbs)-len(numauxverbs)
     tokens = sent_tokenize(text)
+# Pre-Processing Steps for sentiment
+    sentiments=[sent.sentiment for sent in doc.sentences]
+# Pre-processing step for Opinion based
+    Num_sentences=len(doc.sentences)
+    polarity,subjectivity=0,0
+    Number_sentences=len(textB.sentences)
+    for t in textB.sentences:
+        analysis = t.sentiment
+        polarity+=analysis.polarity
+        subjectivity+=analysis.subjectivity
 # Preprocessing for morphological features
     PronType_Art=0
     PronType_Dem=0
@@ -577,8 +601,8 @@ def all_features(text, scp, sdp):
             elif 'In' in f:
                 Clusivity_In=Clusivity_In+1
     # Pre-Processing steps for syntactical features
-def clauses(sentences,scp):
-        y = scp.raw_parse_sents(sentences) 
+    def clauses(sentences,scp):
+        y = scp.raw_parse_sents(sentences)    
         z = list(y)    
         z1 = [list(x) for x in z]
         deps = []
@@ -596,7 +620,7 @@ def clauses(sentences,scp):
         dependent_sentences[:] = [sent.split(".")[0] for sent in dependent_sentences]
         dependent_sentences[:] = [" ".join(sent.split()) for sent in dependent_sentences]
         return dependent_sentences
-       
+    
     num_noun_phrases = []
     num_verb_phrases = []
     num_adj_phrases = []
@@ -667,15 +691,24 @@ def clauses(sentences,scp):
         'Avg_SentLenghtByWord':np.average([len(token.split()) for token in tokens]),
         'Avg_SentLenghtByCh':np.average([len(token) for token in tokens]),
 
-        '2.Syntactical Features are .......'
-        'noun_phrases_per_corpus':float(sum(num_noun_phrases))/len(num_noun_phrases),
-        'verb_phrases_per_corpus':float(sum(num_verb_phrases))/len(num_verb_phrases),
-        'adv_phrases_per_corpus' :float(sum(num_adv_phrases))/len(num_adv_phrases),
-        'adj_phrases_per_corpus':float(sum(num_adj_phrases))/len(num_adj_phrases),
-        'prep_phrases_per_corpus':float(sum(num_prep_phrases))/len(num_adj_phrases),
-        'dep_clauses_per_corpus':float(len(dependent_sents))/len(tokens),
+        '2.Sentiment scores are......'
+        '2.1.Positive Sentiment':sentiments.count(0)/Num_sentences,
+        '2.2.Neutral Sentiment':sentiments.count(1)/Num_sentences,
+        '2.3.Negative Sentiment':sentiments.count(2)/Num_sentences,
 
-        '3.Morphological Features are.....'
+        '3''.''Opinion Based Scores are....'
+        '3.1.''Polarity':polarity/Number_sentences,
+        '3.2.''Subjectivity':subjectivity/Number_sentences,
+
+        '4''.''Syntactical Features are .......'
+        '4.1.''noun_phrases_per_corpus':float(sum(num_noun_phrases))/len(num_noun_phrases),
+        '4.2.''verb_phrases_per_corpus':float(sum(num_verb_phrases))/len(num_verb_phrases),
+        '4.3.''adv_phrases_per_corpus' :float(sum(num_adv_phrases))/len(num_adv_phrases),
+        '4.4.''adj_phrases_per_corpus':float(sum(num_adj_phrases))/len(num_adj_phrases),
+        '4.5.''prep_phrases_per_corpus':float(sum(num_prep_phrases))/len(num_adj_phrases),
+        '4.6.''dep_clauses_per_corpus':float(len(dependent_sents))/len(tokens),
+
+        '5''.''Morphological Features are.....'
         'personal or possessive personal pronoun or determiner - Prs': PronType_Prs,
         'reciprocal pronoun - Rcp':PronType_Rcp,
         'article - Art ':PronType_Art,
