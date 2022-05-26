@@ -30,7 +30,7 @@ from textblob import TextBlob
 
 from pattern.en import parsetree, Chunk
 from nltk.tree import Tree
-
+import pickle
 import stanza
 
 stanza.download('en')
