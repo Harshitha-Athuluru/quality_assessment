@@ -812,6 +812,6 @@ def all_features(text,scp,sdp):
     }
     return feats
 
-x=all_features(text)
-print(x)
+#x=all_features(text)
+#print(x)
 
