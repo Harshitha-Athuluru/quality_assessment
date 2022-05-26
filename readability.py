@@ -40,7 +40,6 @@ def init_sdp(jar_path, models_jar_path):
 
 
 def clauses(sentences,scp):
-        global scp
         y = scp.raw_parse_sents(sentences) 
         z = list(y)    
         z1 = [list(x) for x in z]
