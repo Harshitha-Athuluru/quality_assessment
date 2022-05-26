@@ -37,28 +37,6 @@ def init_scp(jar_path, models_jar_path):
 def init_sdp(jar_path, models_jar_path):
   return StanfordDependencyParser(path_to_jar = jar_path, path_to_models_jar = models_jar_path)
 
-
-
-def clauses(sentences,scp):
-        y = scp.raw_parse_sents(sentences) 
-        z = list(y)    
-        z1 = [list(x) for x in z]
-        deps = []
-        for sent in z1:
-            for subtree in sent[0].subtrees():
-                if subtree.label()=="SBAR":
-                    deps.append(' '.join(subtree.leaves()))
-        
-        dep_sents = list(set(deps))
-        dependent_sentences = []
-        for s in dep_sents:
-            temp = s.split(',')
-            dependent_sentences.append(temp[0])
-        temp = dependent_sentences
-        dependent_sentences[:] = [sent.split(".")[0] for sent in dependent_sentences]
-        dependent_sentences[:] = [" ".join(sent.split()) for sent in dependent_sentences]
-        return dependent_sentences
-    
     
 def all_features(text, scp, sdp):
     nlp=stanza.Pipeline('en',processors='tokenize,mwt,POS')
@@ -599,6 +577,25 @@ def all_features(text, scp, sdp):
             elif 'In' in f:
                 Clusivity_In=Clusivity_In+1
     # Pre-Processing steps for syntactical features
+def clauses(sentences,scp):
+        y = scp.raw_parse_sents(sentences) 
+        z = list(y)    
+        z1 = [list(x) for x in z]
+        deps = []
+        for sent in z1:
+            for subtree in sent[0].subtrees():
+                if subtree.label()=="SBAR":
+                    deps.append(' '.join(subtree.leaves()))
+        
+        dep_sents = list(set(deps))
+        dependent_sentences = []
+        for s in dep_sents:
+            temp = s.split(',')
+            dependent_sentences.append(temp[0])
+        temp = dependent_sentences
+        dependent_sentences[:] = [sent.split(".")[0] for sent in dependent_sentences]
+        dependent_sentences[:] = [" ".join(sent.split()) for sent in dependent_sentences]
+        return dependent_sentences
        
     num_noun_phrases = []
     num_verb_phrases = []
