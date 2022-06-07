@@ -864,5 +864,4 @@ def classify(x,saved_model):
     loaded_model = pickle.load(open(saved_model,'rb'))
     result = loaded_model.predict(x)
     print(result)
-
     return result
