@@ -23,10 +23,10 @@ def article_quality(jar_path,models_jar_path,text):
     X.append(temp)
     filename="/content/quality_assessment/best_model.sav"
     yy=readability.classify(X,filename)
-    print("readability: {}".format(readability_classes[yy[0]]))
+    #print("readability: {}".format(readability_classes[yy[0]]))
     readabilty_score = readabilty_scores[yy[0]]
     sentiment_values = sentiment.return_sentiment_score(text)
-    print(sentiment_values)
+    #print(sentiment_values)
     opinion_values=opinion.return_opinion_score(text)
-    print(opinion_values)
-    return readability_classes[yy[0]],sentiment_values,opinion_values
+    #print(opinion_values)
+    return readabilty_score,sentiment_values,opinion_values[1]
