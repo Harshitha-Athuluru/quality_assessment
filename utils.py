@@ -1,4 +1,8 @@
 from quality_assessment import readability
+from quality_assessment import sentiment
+from quality_assessment import opinion
+
+
 def article_quality(jar_path,models_jar_path,text):
     # Path to CoreNLP jar unzipped
     #jar_path = '/content/stanford-corenlp-4.4.0/stanford-corenlp-4.4.0.jar'
@@ -21,4 +25,8 @@ def article_quality(jar_path,models_jar_path,text):
     yy=readability.classify(X,filename)
     print("readability: {}".format(readability_classes[yy[0]]))
     readabilty_score = readabilty_scores[yy[0]]
-    return readability_classes[yy[0]]
+    sentiment_values = sentiment.return_sentiment_score(text)
+    print(sentiment_values)
+    opinion_values=opinion.return_opinion_score(text)
+    print(opinion_values)
+    return readability_classes[yy[0]],sentiment_values,opinion_values
