@@ -1,5 +1,5 @@
 import readability
-def article_quality(jar_path,models_jar_path):
+def article_quality(jar_path,models_jar_path,text):
     # Path to CoreNLP jar unzipped
     #jar_path = '/content/stanford-corenlp-4.4.0/stanford-corenlp-4.4.0.jar'
     # Path to CoreNLP model jar
